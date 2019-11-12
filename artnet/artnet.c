@@ -80,7 +80,9 @@ artnet_node artnet_new(const char *ip, int verbose) {
   int i;
 
   n = malloc(sizeof(artnet_node_t));
-
+  if (verbose) {
+	  printf("Successfully malloc artnet_node = %p \n", n);
+  }
   if (!n) {
     artnet_error("malloc failure");
     return NULL;
@@ -104,9 +106,15 @@ artnet_node artnet_new(const char *ip, int verbose) {
   n->peering.master = TRUE;
 
   n->sd = INVALID_SOCKET;
-
+  if (verbose) {
+    printf("In artnet_new n->sd init as INVALID. ip=%s\n", ip);
+  }
   if (artnet_net_init(n, ip)) {
     free(n);
+    artnet_error("net_init failure!\n");
+    if (verbose) {
+      printf("In artnet_new: net_init failure!\n");
+    }
     return NULL;
   }
 
@@ -126,6 +134,9 @@ artnet_node artnet_new(const char *ip, int verbose) {
     // reset tods
     reset_tod(&n->ports.in[i].port_tod);
     reset_tod(&n->ports.out[i].port_tod);
+  }
+  if (verbose) {
+    printf("Successfully create artnet_node = %p \n", n);
   }
   return n;
 }
@@ -1110,6 +1121,9 @@ int artnet_set_node_type(artnet_node vn, artnet_node_type type) {
   node n = (node) vn;
   check_nullnode(vn);
 
+  if (n->state.verbose) {
+    printf("set_node_type node = %p \n", n);
+  }
   n->state.node_type = type;
   return ARTNET_EOK;
 }

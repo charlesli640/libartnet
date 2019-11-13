@@ -453,7 +453,9 @@ int artnet_net_init(node n, const char *preferred_ip) {
     }
     if (!found) {
       artnet_error("Cannot find ip %s\n", preferred_ip);
-      printf("Cannot find ip %s\n", preferred_ip);
+      if (n->state.verbose) {
+        printf("Cannot find ip %s\n", preferred_ip);
+      }
       ret = ARTNET_ENET;
       goto e_cleanup;
     }

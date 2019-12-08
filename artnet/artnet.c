@@ -776,8 +776,18 @@ int artnet_send_address(artnet_node vn,
     p.data.addr.ver = ARTNET_VERSION;
     p.data.addr.filler1 = 0;
     p.data.addr.filler2 = 0;
-    strncpy((char*) &p.data.addr.shortname, shortName, ARTNET_SHORT_NAME_LENGTH);
-    strncpy((char*) &p.data.addr.longname, longName, ARTNET_LONG_NAME_LENGTH);
+
+    // error: ‘strncpy’ specified bound XX equals destination size [-Werror=stringop-truncation]
+    // https://stackoverflow.com/questions/50198319/gcc-8-wstringop-truncation-what-is-the-good-practice
+    // strncpy((char*) &p.data.addr.shortname, shortName, ARTNET_SHORT_NAME_LENGTH);
+    int destSize = ARTNET_SHORT_NAME_LENGTH;
+    int sizeCp = strnlen(shortName, destSize - 1);
+    memcpy((char*) &p.data.addr.shortname, shortName, sizeCp + 1);
+
+    // strncpy((char*) &p.data.addr.longname, longName, ARTNET_LONG_NAME_LENGTH);
+    destSize = ARTNET_LONG_NAME_LENGTH;
+    sizeCp = strnlen(longName, destSize - 1);
+    memcpy((char*) &p.data.addr.longname, longName, sizeCp + 1);
 
     memcpy(&p.data.addr.swin, inAddr, ARTNET_MAX_PORTS);
     memcpy(&p.data.addr.swout, outAddr, ARTNET_MAX_PORTS);

@@ -1,0 +1,6 @@
+sudo apt install autoconf libtool shtool
+autoreconf -ivf
+./configure
+make
+sudo make install
+
